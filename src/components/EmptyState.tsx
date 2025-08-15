@@ -44,6 +44,7 @@ export const EmptyState = ({ onAddSemester }: EmptyStateProps) => {
             onClick={onAddSemester}
             size="lg"
             className="bg-gradient-primary hover:bg-gradient-secondary text-white shadow-primary transition-smooth hover-lift px-8 py-3 text-lg"
+            aria-label="Add your first semester to start tracking your academic progress"
           >
             <Plus className="h-5 w-5 mr-2" />
             Add Your First Semester

@@ -2,31 +2,84 @@ import { useState, useEffect, useCallback } from 'react';
 import { Subject, Semester, CalculatorData, GradingSystem, gradingSystems } from '@/types/calculator';
 
 const STORAGE_KEY = 'cgpa-calculator-data';
+const GRADING_SYSTEM_KEY = 'cgpa-calculator-grading-system';
+const DATA_VERSION = '1.0.0';
 
-export const useCalculator = () => {
-  const [data, setData] = useState<CalculatorData>(() => {
+interface StoredData {
+  version: string;
+  data: CalculatorData;
+  gradingSystemId: string;
+  timestamp: number;
+}
+
+// Safe data loading with migration support
+const loadStoredData = (): { data: CalculatorData; gradingSystemId: string } => {
+  try {
     const saved = localStorage.getItem(STORAGE_KEY);
     if (saved) {
-      try {
-        return JSON.parse(saved);
-      } catch {
-        // Fallback to default
+      const parsed = JSON.parse(saved);
+      
+      // Version check and migration logic can be added here
+      if (parsed.version === DATA_VERSION) {
+        return {
+          data: parsed.data,
+          gradingSystemId: parsed.gradingSystemId
+        };
+      }
+      
+      // For now, handle legacy data without version
+      if (!parsed.version && parsed.semesters) {
+        return {
+          data: parsed as CalculatorData,
+          gradingSystemId: gradingSystems[0].id
+        };
       }
     }
-    return {
+  } catch (error) {
+    console.warn('Failed to load stored data:', error);
+  }
+  
+  return {
+    data: {
       semesters: [],
       cgpa: 0,
       totalCredits: 0,
       totalGradePoints: 0,
+    },
+    gradingSystemId: gradingSystems[0].id
+  };
+};
+
+// Safe data saving
+const saveStoredData = (data: CalculatorData, gradingSystemId: string) => {
+  try {
+    const storedData: StoredData = {
+      version: DATA_VERSION,
+      data,
+      gradingSystemId,
+      timestamp: Date.now()
     };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(storedData));
+  } catch (error) {
+    console.error('Failed to save data:', error);
+  }
+};
+
+export const useCalculator = () => {
+  const [data, setData] = useState<CalculatorData>(() => {
+    const { data } = loadStoredData();
+    return data;
   });
 
-  const [gradingSystem, setGradingSystem] = useState<GradingSystem>(gradingSystems[0]);
+  const [gradingSystem, setGradingSystem] = useState<GradingSystem>(() => {
+    const { gradingSystemId } = loadStoredData();
+    return gradingSystems.find(gs => gs.id === gradingSystemId) || gradingSystems[0];
+  });
 
-  // Save to localStorage whenever data changes
+  // Save to localStorage whenever data or grading system changes
   useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [data]);
+    saveStoredData(data, gradingSystem.id);
+  }, [data, gradingSystem.id]);
 
   // Calculate SGPA for a semester
   const calculateSGPA = useCallback((subjects: Subject[]): number => {

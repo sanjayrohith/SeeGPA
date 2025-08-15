@@ -2,6 +2,7 @@ import { Plus, Trash2, GraduationCap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { SubjectRow } from './SubjectRow';
 import { Semester, GradingSystem } from '@/types/calculator';
 
@@ -35,20 +36,29 @@ export const SemesterCard = ({
             value={semester.name}
             onChange={(e) => onUpdateName(e.target.value)}
             className="text-lg font-semibold border-none bg-transparent p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+            aria-label="Semester name"
           />
         </div>
         <div className="flex items-center space-x-2">
           <div className="text-sm text-muted-strong">
             SGPA: <span className="font-bold text-primary">{semester.sgpa.toFixed(2)}</span>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={onRemoveSemester}
-            className="border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-smooth"
-          >
-            <Trash2 className="h-4 w-4" />
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={onRemoveSemester}
+                className="border-destructive/20 text-destructive hover:bg-destructive hover:text-destructive-foreground transition-smooth"
+                aria-label={`Delete ${semester.name}`}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Delete this semester</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
       </CardHeader>
 
@@ -77,14 +87,22 @@ export const SemesterCard = ({
 
         {/* Add Subject Button */}
         <div className="pt-4 border-t border-card-border">
-          <Button
-            onClick={onAddSubject}
-            variant="outline"
-            className="w-full border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
-          >
-            <Plus className="h-4 w-4 mr-2" />
-            Add Subject
-          </Button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                onClick={onAddSubject}
+                variant="outline"
+                className="w-full border-primary/20 text-primary hover:bg-primary hover:text-primary-foreground transition-smooth"
+                aria-label="Add a new subject to this semester"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Subject
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Add a new subject to this semester</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Semester Summary */}

@@ -35,13 +35,13 @@ export const gradingSystems: GradingSystem[] = [
     name: '10-Point Scale',
     scale: 10,
     grades: {
-      'A+': 10,
-      'A': 9,
-      'B+': 8,
-      'B': 7,
-      'C+': 6,
-      'C': 5,
-      'D': 4,
+      'O': 10,
+      'A+': 9,
+      'A': 8,
+      'B+': 7,
+      'B': 6,
+      'C+': 5,
+      'C': 4,
       'F': 0,
     },
   },
@@ -71,3 +71,21 @@ export const defaultSubject: Omit<Subject, 'id'> = {
   grade: '',
   gradePoints: 0,
 };
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  phone?: string;
+  college?: string;
+  course?: string;
+  createdAt: Date;
+}
+
+export interface UserFormData {
+  name: string;
+  email: string;
+  phone: string;
+  college: string;
+  course: string;
+}
