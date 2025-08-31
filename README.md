@@ -50,6 +50,6 @@ npm run build
 Then follow your hosting provider's instructions to deploy the contents of the `dist` folder.
 
 
-## Custom Domain(guide)
+## Custom Domain(guidence)
 
 If your hosting provider supports custom domains, you can connect your own domain by following their documentation.
